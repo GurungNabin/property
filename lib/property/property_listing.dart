@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_property_app/models/model_propertysell.dart';
@@ -48,7 +47,7 @@ class _PropertyListingState extends State<PropertyListing> {
   }
 
   Widget _buildPropertyListWidget() {
-    if (propertySellList == null || propertySellList.length == 0) {
+    if (propertySellList.length == 0) {
       return Center(
         child: Text(
           "No data found!!",
@@ -98,12 +97,11 @@ class _PropertyListingState extends State<PropertyListing> {
 
   Widget _buildImagewidget(PropertySellModel sellModel) {
     return Hero(
-      tag: sellModel.id,
+      tag: sellModel.id!,
       child: Container(
         height: 120.0,
         width: 120.0,
-        child: sellModel.sellImages == null ||
-                sellModel.sellImages.length == 0 ||
+        child: sellModel.sellImages.length == 0 ||
                 sellModel.sellImages[0].isEmpty
             ? placeHolderAssetWidget()
             : fetchImageFromNetworkFileWithPlaceHolder(sellModel.sellImages[0]),
@@ -145,10 +143,10 @@ class _PropertyListingState extends State<PropertyListing> {
             Padding(
                 padding: const EdgeInsets.only(top: 5.0, right: 5.0, left: 5.0),
                 child: Text(
-                    "${sellModel.sellBedrooms} BHK ${getPropertyTypeById(sellModel.sellType)}")),
+                    "${sellModel.sellBedrooms} BHK ${getPropertyTypeById(sellModel.sellType!)}")),
             Padding(
               padding: const EdgeInsets.only(top: 5.0, right: 5.0, left: 5.0),
-              child: Text(sellModel.sellCity),
+              child: Text(sellModel.sellCity!),
             ),
             Padding(
               padding: const EdgeInsets.only(top: 5.0, right: 5.0, left: 5.0),
@@ -160,7 +158,7 @@ class _PropertyListingState extends State<PropertyListing> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 5.0),
-                    child: Text(sellModel.sellContact),
+                    child: Text(sellModel.sellContact!),
                   ),
                 ],
               ),
@@ -186,9 +184,12 @@ class _PropertyListingState extends State<PropertyListing> {
     NetworkCheck networkCheck = NetworkCheck();
     networkCheck.checkInternet((isNetworkPresent) async {
       if (!isNetworkPresent) {
-        final snackBar = SnackBar(content: Text("Please check your internet connection !!"));
+        final snackBar =
+            SnackBar(content: Text("Please check your internet connection !!"));
 
-        _scaffoldKey.currentState.showSnackBar(snackBar);
+        _scaffoldKey.currentState!.setState(() {
+          SnackBar(content: snackBar);
+        });
         return;
       } else {
         setState(() {
@@ -198,29 +199,39 @@ class _PropertyListingState extends State<PropertyListing> {
     });
 
     try {
-      final propertySellReference = FirebaseDatabase.instance.reference().child("Property").child("Sell");
+      final propertySellReference =
+          FirebaseDatabase.instance.reference().child("Property").child("Sell");
 
-      propertySellReference.onValue.listen((Event event) {
-        propertySellList = [];
+      propertySellReference.onValue.listen((event) {
+        // Initialize the list at the start of the listener
+        List<PropertySellModel> propertySellList = [];
+
         if (event.snapshot.value != null) {
-          print("value: ${event.snapshot}");
-          print("value: ${event.snapshot.key}");
-          print("value: ${event.snapshot.value}");
-          for (var value in event.snapshot.value.values) {
-            print("valueData : ${value}");
+          print("Snapshot Key: ${event.snapshot.key}");
+          print("Snapshot Value: ${event.snapshot.value}");
+
+          // Iterate through the values and convert them to PropertySellModel
+          for (var value in (event.snapshot.value as Map).values) {
+            print("Value Data: ${value}");
             propertySellList.add(PropertySellModel.fromJson(value));
           }
         }
 
-        print("propertySellList : ${propertySellList}");
-        print("propertySellList : ${propertySellList.length}");
+        print("Property Sell List: ${propertySellList}");
+        print("Property Sell List Length: ${propertySellList.length}");
+
+        // Update the UI after processing the data
         setState(() {
+          this.propertySellList =
+              propertySellList; // Ensure you update the state variable
           isFetching = false;
         });
       });
     } catch (error) {
-      print("catch block : " + error.toString());
+      // Handle the error appropriately
+      print("Catch Block: " + error.toString());
 
+      // Ensure state is updated even when an error occurs
       setState(() {
         isFetching = false;
       });

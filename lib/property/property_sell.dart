@@ -1,18 +1,19 @@
 import 'dart:io';
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_property_app/main.dart';
 import 'package:flutter_property_app/models/model_propertysell.dart';
 import 'package:flutter_property_app/utils/color_utils.dart';
 import 'package:flutter_property_app/utils/method_utils.dart';
 import 'package:flutter_property_app/utils/network_utils.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_property_app/main.dart';
 
 class PropertySell extends StatefulWidget {
-  final PropertySellModel sellModel;
+  final PropertySellModel? sellModel;
   static const routeName = "/property-sell";
 
   PropertySell({this.sellModel});
@@ -49,21 +50,20 @@ class _PropertySellState extends State<PropertySell> {
   void didChangeDependencies() {
     if (widget.sellModel != null) {
       if (isEditInitialised) {
-        addressController.text = widget.sellModel.sellAddress;
-        cityController.text = widget.sellModel.sellCity;
-        regionController.text = widget.sellModel.sellRegion;
-        countryController.text = widget.sellModel.sellCountry;
-        priceController.text = widget.sellModel.sellPrice;
-        bedroomController.text = widget.sellModel.sellBedrooms;
-        bathroomController.text = widget.sellModel.sellBathrooms;
-        balconyController.text = widget.sellModel.sellBalconies;
-        descriptionController.text = widget.sellModel.sellDescription;
-        contactController.text = widget.sellModel.sellContact;
-        selected = widget.sellModel.sellType;
+        addressController.text = widget.sellModel!.sellAddress!;
+        cityController.text = widget.sellModel!.sellCity!;
+        regionController.text = widget.sellModel!.sellRegion!;
+        countryController.text = widget.sellModel!.sellCountry!;
+        priceController.text = widget.sellModel!.sellPrice!;
+        bedroomController.text = widget.sellModel!.sellBedrooms!;
+        bathroomController.text = widget.sellModel!.sellBathrooms!;
+        balconyController.text = widget.sellModel!.sellBalconies!;
+        descriptionController.text = widget.sellModel!.sellDescription!;
+        contactController.text = widget.sellModel!.sellContact!;
+        selected = widget.sellModel!.sellType!;
 
-        if (widget.sellModel.sellImages != null &&
-            widget.sellModel.sellImages.length > 0) {
-          _imageFilesList = widget.sellModel.sellImages;
+        if (widget.sellModel!.sellImages.length > 0) {
+          _imageFilesList = widget.sellModel!.sellImages;
 
           print("_imageFilesList : ${_imageFilesList.length}");
           print("_imageFilesList : ${_imageFilesList}");
@@ -76,53 +76,51 @@ class _PropertySellState extends State<PropertySell> {
     super.didChangeDependencies();
   }
 
-  _getLocation() async {
-    try {
-      Geolocator geolocator = Geolocator();
-      Position currentLocation = await geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.best);
-      List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(
-          currentLocation.latitude, currentLocation.longitude);
+  // _getLocation() async {
+  //   try {
+  //     Geolocator geolocator = Geolocator();
+  //     Position currentLocation = await Geolocator.getCurrentPosition(
+  //         desiredAccuracy: LocationAccuracy.best);
+  //     List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(
+  //         currentLocation.latitude, currentLocation.longitude);
 
-      if (currentLocation != null) {
-        print("country : ${placemark[0].country}");
-        print("position : ${placemark[0].position}");
-        print("locality : ${placemark[0].locality}");
-        print("administrativeArea : ${placemark[0].administrativeArea}");
-        print("postalCode : ${placemark[0].postalCode}");
-        print("name : ${placemark[0].name}");
-        print("subAdministrativeArea : ${placemark[0].subAdministrativeArea}");
-        print("isoCountryCode : ${placemark[0].isoCountryCode}");
-        print("subLocality : ${placemark[0].subLocality}");
-        print("subThoroughfare : ${placemark[0].subThoroughfare}");
-        print("thoroughfare : ${placemark[0].thoroughfare}");
+  //     print("country : ${placemark[0].country}");
+  //     print("position : ${placemark[0].position}");
+  //     print("locality : ${placemark[0].locality}");
+  //     print("administrativeArea : ${placemark[0].administrativeArea}");
+  //     print("postalCode : ${placemark[0].postalCode}");
+  //     print("name : ${placemark[0].name}");
+  //     print("subAdministrativeArea : ${placemark[0].subAdministrativeArea}");
+  //     print("isoCountryCode : ${placemark[0].isoCountryCode}");
+  //     print("subLocality : ${placemark[0].subLocality}");
+  //     print("subThoroughfare : ${placemark[0].subThoroughfare}");
+  //     print("thoroughfare : ${placemark[0].thoroughfare}");
 
-        if (placemark[0] != null) {
-          if (placemark[0].country.isNotEmpty) {
-            countryController.text = placemark[0].country;
-          }
+  //     if (placemark[0] != null) {
+  //       if (placemark[0].country.isNotEmpty) {
+  //         countryController.text = placemark[0].country;
+  //       }
 
-          if (placemark[0].administrativeArea.isNotEmpty) {
-            regionController.text = placemark[0].administrativeArea;
-          }
+  //       if (placemark[0].administrativeArea.isNotEmpty) {
+  //         regionController.text = placemark[0].administrativeArea;
+  //       }
 
-          if (placemark[0].subAdministrativeArea.isNotEmpty) {
-            cityController.text = placemark[0].subAdministrativeArea;
-          }
+  //       if (placemark[0].subAdministrativeArea.isNotEmpty) {
+  //         cityController.text = placemark[0].subAdministrativeArea;
+  //       }
 
-          if (placemark[0].name.isNotEmpty) {
-            addressController.text = placemark[0].name;
-          }
+  //       if (placemark[0].name.isNotEmpty) {
+  //         addressController.text = placemark[0].name;
+  //       }
 
-          setState(() {});
-        }
-      }
-    } on PlatformException catch (error) {
-      print(error.message);
-    } catch (error) {
-      print("Error: $error");
-    }
-  }
+  //       setState(() {});
+  //     }
+  //   } on PlatformException catch (error) {
+  //     print(error.message);
+  //   } catch (error) {
+  //     print("Error: $error");
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -299,8 +297,7 @@ class _PropertySellState extends State<PropertySell> {
                       child: Stack(
                         children: <Widget>[
                           ClipOval(
-                            child: _imageFilesList[index] != null &&
-                                    _imageFilesList[index].isNotEmpty
+                            child: _imageFilesList[index].isNotEmpty
                                 ? checkForFileOrNetworkPath(
                                         _imageFilesList[index])
                                     ? fetchImageFromNetworkFileWithPlaceHolderWidthHeight(
@@ -440,22 +437,26 @@ class _PropertySellState extends State<PropertySell> {
   }
 
   _getImage(BuildContext context, ImageSource source) async {
-    ImagePicker.pickImage(
-      source: source,
-      maxWidth: 400.0,
-      maxHeight: 400.0,
-    ).then((File image) async {
-      if (image != null) {
+    final ImagePicker picker = ImagePicker();
+    try {
+      final XFile? pickedFile = await picker.pickImage(
+        source: source,
+        maxWidth: 400.0,
+        maxHeight: 400.0,
+      );
+
+      if (pickedFile != null) {
         setState(() {
-          _imageFilesList.add(image.path);
-          print("_imageFile : ${image}");
-          print("filePath : ${image.path}");
-          print("fileURI : ${image.uri}");
-          /*String filePath = image.path;
-          Uri fileURI = image.uri;*/
+          _imageFilesList.add(pickedFile.path);
+          print("_imageFile : ${pickedFile.path}");
+          print("filePath : ${pickedFile.path}");
         });
+      } else {
+        print('No image selected.');
       }
-    });
+    } catch (e) {
+      print('Error picking image: $e');
+    }
   }
 
   Widget _buildPropertyLocationWidget() {
@@ -467,7 +468,7 @@ class _PropertySellState extends State<PropertySell> {
         children: <Widget>[
           GestureDetector(
             onTap: () {
-              _getLocation();
+              // _getLocation();
             },
             child: Row(
               children: <Widget>[
@@ -495,10 +496,11 @@ class _PropertySellState extends State<PropertySell> {
                 labelText: "Address",
                 labelStyle: TextStyle(color: Colors.grey),
               ),
-              validator: (String address) {
-                if (address.isEmpty) {
+              validator: (String? address) {
+                if (address!.isEmpty) {
                   return "Address field is required!!";
                 }
+                return null;
               },
             ),
           ),
@@ -512,10 +514,11 @@ class _PropertySellState extends State<PropertySell> {
                 labelText: "City",
                 labelStyle: TextStyle(color: Colors.grey),
               ),
-              validator: (String city) {
-                if (city.isEmpty) {
+              validator: (String? city) {
+                if (city!.isEmpty) {
                   return "City field is required!!";
                 }
+                return null;
               },
             ),
           ),
@@ -535,10 +538,11 @@ class _PropertySellState extends State<PropertySell> {
             padding:
                 const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
             child: TextFormField(
-              validator: (String country) {
-                if (country.isEmpty) {
+              validator: (String? country) {
+                if (country!.isEmpty) {
                   return "Country field is required!!";
                 }
+                return null;
               },
               controller: countryController,
               style: TextStyle(color: Colors.black),
@@ -561,10 +565,11 @@ class _PropertySellState extends State<PropertySell> {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: TextFormField(
-          validator: (String price) {
-            if (price.isEmpty) {
+          validator: (String? price) {
+            if (price!.isEmpty) {
               return "Price field is required!!";
             }
+            return null;
           },
           keyboardType: TextInputType.number,
           controller: priceController,
@@ -589,10 +594,11 @@ class _PropertySellState extends State<PropertySell> {
             padding:
                 const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
             child: TextFormField(
-              validator: (String bedrooms) {
-                if (bedrooms.isEmpty) {
+              validator: (String? bedrooms) {
+                if (bedrooms!.isEmpty) {
                   return "Bedroom field is required!!";
                 }
+                return null;
               },
               controller: bedroomController,
               keyboardType: TextInputType.number,
@@ -642,10 +648,11 @@ class _PropertySellState extends State<PropertySell> {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: TextFormField(
-          validator: (String contact) {
-            if (contact.isEmpty) {
+          validator: (String? contact) {
+            if (contact!.isEmpty) {
               return "Contact field is required!!";
             }
+            return null;
           },
           keyboardType: TextInputType.number,
           maxLength: 10,
@@ -709,11 +716,13 @@ class _PropertySellState extends State<PropertySell> {
     if (selected == 0) {
       final snackBar = SnackBar(content: Text("Select property type!!"));
 
-      _scaffoldKey.currentState.showSnackBar(snackBar);
+      _scaffoldKey.currentState!.setState(() {
+          SnackBar(content: snackBar);
+        });
       return;
     }
 
-    if (!_formKey.currentState.validate()) {
+    if (!_formKey.currentState!.validate()) {
       return;
     }
 
@@ -723,7 +732,9 @@ class _PropertySellState extends State<PropertySell> {
         final snackBar =
             SnackBar(content: Text("Please check your internet connection !!"));
 
-        _scaffoldKey.currentState.showSnackBar(snackBar);
+        _scaffoldKey.currentState!.setState(() {
+          SnackBar(content: snackBar);
+        });
         return;
       } else {
         setState(() {
@@ -735,7 +746,7 @@ class _PropertySellState extends State<PropertySell> {
     try {
       List<String> imagePaths = [];
       try {
-        if (_imageFilesList != null && _imageFilesList.length > 0) {
+        if (_imageFilesList.length > 0) {
           imagePaths = await uploadImage(_imageFilesList);
           print("imagePaths : ${imagePaths}");
           print("imagePaths : ${imagePaths.length}");
@@ -749,14 +760,13 @@ class _PropertySellState extends State<PropertySell> {
       print("_imageFilesList : ${_imageFilesList.length}");
       print("imagePaths : ${imagePaths.length}");
 
-      String resourceID = propertySellReference.push().key;
+      String resourceID = propertySellReference.push().key.toString();
 
-      if (widget.sellModel == null || widget.sellModel.id == null) {
+      if (widget.sellModel == null || widget.sellModel!.id == null) {
         await propertySellReference.child(resourceID).set({
           "id": resourceID,
           "sellType": selected,
-          "sellImages":
-              imagePaths != null && imagePaths.length > 0 ? imagePaths : "",
+          "sellImages": imagePaths.length > 0 ? imagePaths : "",
           "sellAddress": addressController.text,
           "sellCity": cityController.text,
           "sellRegion": regionController.text,
@@ -770,11 +780,10 @@ class _PropertySellState extends State<PropertySell> {
           "updatedAt": DateTime.now().toIso8601String(),
         });
       } else {
-        await propertySellReference.child(widget.sellModel.id).update({
-          "id": widget.sellModel.id,
+        await propertySellReference.child(widget.sellModel!.id!).update({
+          "id": widget.sellModel!.id,
           "sellType": selected,
-          "sellImages":
-              imagePaths != null && imagePaths.length > 0 ? imagePaths : "",
+          "sellImages": imagePaths.length > 0 ? imagePaths : "",
           "sellAddress": addressController.text,
           "sellCity": cityController.text,
           "sellRegion": regionController.text,
@@ -793,9 +802,12 @@ class _PropertySellState extends State<PropertySell> {
         isUploadingPost = false;
       });
 
-      var propertyName=bedroomController.text+ " BHK "+ getPropertyTypeById(selected) + " is for sale !!";
-      var contact="Contact : ${contactController.text}";
-      repeatNotification(propertyName,contact);
+      var propertyName = bedroomController.text +
+          " BHK " +
+          getPropertyTypeById(selected) +
+          " is for sale !!";
+      var contact = "Contact : ${contactController.text}";
+      repeatNotification(propertyName, contact);
 
       Navigator.of(context).pop();
     } catch (error) {
@@ -806,47 +818,49 @@ class _PropertySellState extends State<PropertySell> {
       });
       final snackBar =
           SnackBar(content: Text("Something went wrong. please try again !!"));
-      _scaffoldKey.currentState.showSnackBar(snackBar);
+     _scaffoldKey.currentState!.setState(() {
+          SnackBar(content: snackBar);
+        });
     }
   }
 
-  Future<List<String>> uploadImage(List<String> imageFiles) async {
-    List<String> filePaths = [];
 
-    print("filePaths : ${filePaths}");
-    for (int i = 0; i < imageFiles.length; i++) {
-      if (checkForFileOrNetworkPath(imageFiles[i])) {
-        filePaths.add(imageFiles[i]);
+Future<List<String>> uploadImage(List<String> imageFiles) async {
+  List<String> filePaths = [];
+  print("Initial filePaths: $filePaths");
+
+  try {
+    for (String imageFile in imageFiles) {
+      // Check if the path is a file path or a network path
+      if (checkForFileOrNetworkPath(imageFile)) {
+        filePaths.add(imageFile);
         continue;
       }
-      StorageReference firebaseStorageRef = FirebaseStorage.instance
-          .ref()
-          .child("images/sell/${DateTime.now().toIso8601String()}");
 
-      StorageUploadTask uploadTask = firebaseStorageRef.putFile(File(imageFiles[i]));
-      StorageTaskSnapshot taskSnapshot = await uploadTask.onComplete;
+      // Define a unique file name based on current time
+      String fileName = DateTime.now().toIso8601String();
+      Reference firebaseStorageRef = FirebaseStorage.instance
+          .ref()
+          .child("images/sell/$fileName");
+
+      // Upload the file
+      File file = File(imageFile);
+      UploadTask uploadTask = firebaseStorageRef.putFile(file);
+
+      // Wait for the upload to complete
+      TaskSnapshot taskSnapshot = await uploadTask;
       String storagePath = await taskSnapshot.ref.getDownloadURL();
+      
       filePaths.add(storagePath);
     }
-
-    print("filePaths : ${filePaths}");
-    return filePaths;
+  } catch (e) {
+    print("Error uploading files: $e");
+    // Handle the error (e.g., show a message to the user)
   }
+
+  print("Final filePaths: $filePaths");
+  return filePaths;
 }
 
-/*CachedNetworkImage(
-imageUrl: _imageFilesList.length == 0
-? "file:///storage/emulated/0/Android/data/com.jaym.flutter_property_app/files/Pictures/scaled_Screenshot_20190927-114712.png"
-    : "http://via.placeholder.com/200x150",
-placeholder: (context, url) => CircularProgressIndicator(),
-errorWidget: (context, url, error) => Icon(Icons.error),
-imageBuilder: (context, imageProvider) => Container(
-decoration: BoxDecoration(
-image: DecorationImage(
-image: imageProvider,
-fit: BoxFit.cover,
-colorFilter:
-ColorFilter.mode(Colors.red, BlendMode.colorBurn)),
-),
-),
-),*/
+}
+

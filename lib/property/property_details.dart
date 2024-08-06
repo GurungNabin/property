@@ -1,4 +1,4 @@
-import 'package:cached_network_image/cached_network_image.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_property_app/models/model_propertysell.dart';
 import 'package:flutter_property_app/property/property_sell.dart';
@@ -24,7 +24,7 @@ class PropertyDetailsState extends State<PropertyDetails> {
 
   @override
   Widget build(BuildContext context) {
-    final propertySellDate = getDateFromDateTimeInSpecificFormat(dateFormat, widget.sellModel.updatedAt);
+    final propertySellDate = getDateFromDateTimeInSpecificFormat(dateFormat, widget.sellModel.updatedAt!);
 
     return Scaffold(
       body: CustomScrollView(
@@ -45,7 +45,7 @@ class PropertyDetailsState extends State<PropertyDetails> {
       flexibleSpace: FlexibleSpaceBar(
         title: Text("Rs. ${widget.sellModel.sellPrice}"),
         background: Hero(
-          tag: widget.sellModel.id,
+          tag: widget.sellModel.id!,
           child: widget.sellModel.sellImages != null &&
                   widget.sellModel.sellImages.length > 0
               ? Stack(
@@ -131,7 +131,7 @@ class PropertyDetailsState extends State<PropertyDetails> {
           padding: EdgeInsets.only(top: 20.0),
           width: double.infinity,
           child: Text(
-            getPropertyTypeById(widget.sellModel.sellType),
+            getPropertyTypeById(widget.sellModel.sellType!),
             textAlign: TextAlign.center,
             softWrap: true,
             style: TextStyle(
@@ -149,22 +149,22 @@ class PropertyDetailsState extends State<PropertyDetails> {
           ),
         ),
         _buildPropertyDetailsWidget(),
-        PropertyAddressView("Address", widget.sellModel.sellAddress),
+        PropertyAddressView("Address", widget.sellModel.sellAddress!),
         Divider(
           height: 1,
           color: Colors.transparent,
         ),
-        PropertyAddressView("City", widget.sellModel.sellCity),
+        PropertyAddressView("City", widget.sellModel.sellCity!),
         Divider(
           height: 1,
           color: Colors.transparent,
         ),
-        PropertyAddressView("Country", widget.sellModel.sellCountry),
+        PropertyAddressView("Country", widget.sellModel.sellCountry!),
         Divider(
           height: 1,
           color: Colors.transparent,
         ),
-        PropertyAddressView("Contact", widget.sellModel.sellContact),
+        PropertyAddressView("Contact", widget.sellModel.sellContact!),
         Container(
           padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
           width: double.infinity,
@@ -180,9 +180,9 @@ class PropertyDetailsState extends State<PropertyDetails> {
           padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0),
           width: double.infinity,
           child: Text(
-            widget.sellModel.sellDescription.isEmpty
+            widget.sellModel.sellDescription!.isEmpty
                 ? "-"
-                : widget.sellModel.sellDescription,
+                : widget.sellModel.sellDescription!,
             textAlign: TextAlign.center,
             softWrap: true,
             style: TextStyle(fontSize: 16.0, color: themeColor),

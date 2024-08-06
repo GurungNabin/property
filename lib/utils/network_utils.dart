@@ -13,10 +13,9 @@ class NetworkCheck {
 
   dynamic checkInternet(Function func) {
     check().then((intenet) {
-      if (intenet != null && intenet) {
+      if (intenet) {
         func(true);
-      }
-      else{
+      } else {
         func(false);
       }
     });
